@@ -1,0 +1,16 @@
+WHAT THE BOT DOES:
+    * Creates subjects  (possibly made through a class)
+        - Subjects contain activities/requirements (another class)
+            ~ Users can be grouped for the requirements so only certain people will be pinged
+            ~ The deadline can be set
+            ~ Users can be pinged to remind a task for the requirement or for the deadline
+            ~ A to do list per requirement can be made
+            ~ Details of the subjects are saved
+                > Subject code, professor, sync zoom link and time, 
+            ~ List of subjects can be seen
+            ~ Reminder 10 mins before sync + zoom link
+        - Details of the subjects can automatically be added by adding a screenshot of the subject information from the assessment paper/form/page
+    * Canvas intergration
+        - Automatically sets your subjects and deadlines
+        - Summary of reqs for a week, the week before
+    * Pomodoro Timer
