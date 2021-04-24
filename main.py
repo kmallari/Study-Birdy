@@ -10,6 +10,10 @@ from keep_alive import keep_alive
 from read_text import ocr_space_url
 
 client = discord.Client()
+subjects = []
+
+def add_subject(subject):
+    subjects.append(subject)
 
 
 # on_ready() function is in the discord library.
@@ -19,9 +23,23 @@ client = discord.Client()
 async def on_ready():
     print(f"We have logged in as {client.user}.")
     json_data = json.loads(ocr_space_url('https://i.imgur.com/RPRkYjk.png'))
-    # print(json_data)
     text_from_img = json_data['ParsedResults'][0]['ParsedText']
-    print(text_from_img)
+    print(repr(text_from_img))
+
+commands = '''.sb new <subject_code> <section> <course_name> <prof>
+.sb new https://imgur.com/xxxxxx
+.sb list
+.sb <index> <subject_code / section ...>
+.sb p / pomodoro
+'''
+
+# print all commands with instructions
+# .sb new <subject_code> <section> <course_name> <prof>     -> adds new subject
+# .sb new https://imgur.com/xxxxxx                          -> automatically adds objects
+# .sb list                                                  -> lists all subjects with 
+#                                                              their respective indices
+# .sb <index> <subject_code / section ...>                  -> modify current info of a subj
+# .sb p / pomodoro <work_time> <rest_time>                  -> in minutes
 
 
 @client.event
@@ -33,19 +51,8 @@ async def on_message(message):
     msg = message.content
 
     if msg == '.sb':
-        # print all commands with instructions
-        # .sb new <subject_code> <section> <course_name> <prof>     -> adds new subject
-        # .sb new https://imgur.com/xxxxxx                          -> automatically adds objects
-        # .sb list                                                  -> lists all subjects with their
-        #                                                              respective indices
-        # .sb <index> <subject_code / section ...>                  -> modify current info of a subj
-        # .sb <index>
-        print('''
-.sb new <subject_code> <section> <course_name> <prof>
-.sb new https://imgur.com/xxxxxx
-.sb list
-.sb <index> <subject_code / section ...>
-        ''')
+        await message.channel.send(commands)
+
     if msg.startswith('.sb'):
         msg = msg.split(".sb ", 1)[1]
         if msg.startswith('new '):
