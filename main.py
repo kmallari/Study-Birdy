@@ -15,6 +15,7 @@ subjects = []
 def add_subject(subject):
     subjects.append(subject)
 
+
 # on_ready() function is in the discord library.
 # the program finds the function in the library and executes the lines
 # inside our function.
@@ -40,6 +41,7 @@ commands = '''.sb new <subject_code> <section> <course_name> <prof>
 # .sb <index> <subject_code / section ...>                  -> modify current info of a subj
 # .sb p / pomodoro <work_time> <rest_time>                  -> in minutes
 
+
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -50,6 +52,7 @@ async def on_message(message):
 
     if msg == '.sb':
         await message.channel.send(commands)
+
     if msg.startswith('.sb'):
         msg = msg.split(".sb ", 1)[1]
         if msg.startswith('new '):
