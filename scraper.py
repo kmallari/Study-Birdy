@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup as soup
 from webbot import Browser
 import os
 
-def create_database():
+def update_database():
     my_file = 'subjects.csv'
 
     # check if file exists 
