@@ -4,6 +4,10 @@ from replit import db
 from scraper import create_database
 
 client = discord.Client()
+subjects = []
+
+def add_subject(subject):
+    subjects.append(subject)
 
 @client.event
 async def on_ready():
@@ -18,3 +22,4 @@ async def on_message(message):
         await message.channel.send("Hello!")
 
 client.run(os.getenv('TOKEN'))
+
