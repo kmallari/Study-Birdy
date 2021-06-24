@@ -1,7 +1,6 @@
 import discord
 import os
-from replit import db
-from scraper import create_database
+from scraper import update_database
 
 client = discord.Client()
 
@@ -11,10 +10,21 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+
+    msg = message.content
+
     if message.author == client.user:
         return
     
-    if message.content.startswith('~'):
-        await message.channel.send("Hello!")
+    if msg.startswith('~'):
+        # updates the .csv database
+        if msg.split('~', 1)[1].lower() == 'update':
+            await message.channel.send('Updating the database. This will take around a minute to finish. You will be pinged after the database is updated.')
+            update_database()
+            await message.channel.send(f'Database is updated. <@{message.author.id}>')
+        await message.channel.send('Message started with "~"')
+
+        if msg.split('~', 1)[1].lower() == 'test':
+            
 
 client.run(os.getenv('TOKEN'))
