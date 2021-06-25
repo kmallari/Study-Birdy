@@ -1,35 +1,30 @@
-import discord
+from discord.ext import commands
 import os
 from scraper import update_database
 
-client = discord.Client()
-subjects = []
+# client = discord.Client()
 
-def add_subject(subject):
-    subjects.append(subject)
+bot = commands.Bot(command_prefix="~")
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f'We have logged in as {client.user}')
+    print(f"Bot is ready")
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="example"))
 
-@client.event
-async def on_message(message):
+# ---------- TEMPLATE FOR COMMANDS ---------- #
+# @bot.command()
+# async def test(ctx, arg):
+#     await ctx.send(arg)
 
-    msg = message.content
+@bot.command()
+async def update(arg):
+    await arg.channel.send('Updating the database. This will take around three (3) minutes to finish. You will be pinged after the database is updated. In the meantime, the bot will be unusable.')
+    await update_database()
+    await arg.channel.send(f'Database is updated. <@{arg.author.id}>')
 
-    if message.author == client.user:
-        return
-    
-    if msg.startswith('~'):
-        # updates the .csv database
-        if msg.split('~', 1)[1].lower() == 'update':
-            await message.channel.send('Updating the database. This will take around a minute to finish. You will be pinged after the database is updated.')
-            update_database()
-            await message.channel.send(f'Database is updated. <@{message.author.id}>')
-        await message.channel.send('Message started with "~"')
-
-        if msg.split('~', 1)[1].lower() == 'test':
+@bot.command()
+async def add(ctx, class_code, section):
+    await ctx.channel.send(f'The class code you entered is: {class_code}')
+    await ctx.channel.send(f'The section you entered is: {section}')
             
-
-client.run(os.getenv('TOKEN'))
-
+bot.run(os.getenv('TOKEN'))

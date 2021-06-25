@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup as soup
 from webbot import Browser
 import os
 
-def update_database():
+async def update_database():
     my_file = 'subjects.csv'
 
     # check if file exists 
@@ -10,9 +10,9 @@ def update_database():
         os.remove(my_file)
 
         # Print the statement once the file is deleted  
-        print("The file: {} is deleted!".format(my_file))
+        print(f'An existing {my_file} has been found. The file: {my_file} will be deleted.')
     else:
-        print("The file: {} does not exist! Nothing will be deleted".format(my_file))
+        print(f'The file: {my_file} does not exist. Creating file now...')
 
     web = Browser()
     web.go_to('http://aisis.ateneo.edu/')
