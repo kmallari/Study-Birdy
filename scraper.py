@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup as soup
 from webbot import Browser
 import os
+import pandas as pd
 
 async def update_database():
     my_file = 'subjects.csv'
@@ -34,7 +35,7 @@ async def update_database():
     filename = 'subjects.csv'
     f = open(filename, 'w')
 
-    headers = 'subject_code, section, course_title, units, time, room, instructor, max_no, lang, level, free_slots, remarks, s, p\n'
+    headers = 'subject_code,section,course_title,units,time,room,instructor,max_no,lang,level,free_slots,remarks,s,p\n'
 
     f.write(headers)
 
@@ -71,3 +72,14 @@ async def update_database():
             i += 1
 
     f.close()
+
+    databasefile = 'subjects.csv'
+    temp_db = 'arranged_subjects.csv'
+
+    # rearranges the csv file for more optimal searching
+    db = pd.read_csv(databasefile, skip_blank_lines=True, names=['subject_code', 'section', 'course_title', 'units', 'time', 'room', 'instructor', 'max_no', 'lang', 'level', 'free_slots', 'remarks', 's', 'p'], header=1)
+    print(db['subject_code'])
+    db.drop_duplicates(inplace=True)
+    db.sort_values(by=['subject_code'], ascending=True).to_csv(temp_db, index=False)
+    
+    # os.remove(temp_db)

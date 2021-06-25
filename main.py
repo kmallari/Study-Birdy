@@ -1,4 +1,5 @@
 from discord.ext import commands
+import discord
 import os
 from scraper import update_database
 
