@@ -74,12 +74,8 @@ async def update_database():
     f.close()
 
     databasefile = 'subjects.csv'
-    temp_db = 'arranged_subjects.csv'
 
     # rearranges the csv file for more optimal searching
-    db = pd.read_csv(databasefile, skip_blank_lines=True, names=['subject_code', 'section', 'course_title', 'units', 'time', 'room', 'instructor', 'max_no', 'lang', 'level', 'free_slots', 'remarks', 's', 'p'], header=1)
-    print(db['subject_code'])
-    db.drop_duplicates(inplace=True)
-    db.sort_values(by=['subject_code'], ascending=True).to_csv(temp_db, index=False)
-    
-    # os.remove(temp_db)
+    db = pd.read_csv(databasefile, skip_blank_lines=True, names=['subject_code', 'section', 'course_title', 'units', 'time', 'room', 'instructor', 'max_no', 'lang', 'level', 'free_slots', 'remarks', 's', 'p'])
+
+    db.sort_values(by=['subject_code'], ascending=True).to_csv(databasefile, index=False)
