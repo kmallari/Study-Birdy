@@ -7,6 +7,8 @@ from replit import db # allows access to replit database
 
 # client = discord.Client()
 
+db['roles'] = []
+
 bot = commands.Bot(command_prefix="~")
 
 def add_subj_to_db(class_code, section):
@@ -17,18 +19,10 @@ def add_subj_to_db(class_code, section):
     db[code_sec_str] = subj_info
     print(db[code_sec_str])
 
-def add_to_role(id, class_code, section):
-    add_subj_to_db(class_code, section)
-    # ---- pseudocode -----
-    # check if subject role exists. if not, then call add_subj_to_db
-        # now, make the role
-    # add user to the role
-    # ---- end of pseudocode ----
-
 @bot.event
 async def on_ready():
     print(f"Bot is ready")
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="example"))
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Your friendly study buddy."))
 
 # ---------- TEMPLATE FOR COMMANDS ---------- #
 # @bot.command()
@@ -42,10 +36,22 @@ async def update(ctx):
     await ctx.channel.send(f'Database is updated. <@{ctx.author.id}>')
 
 @bot.command()
-async def add(ctx, class_code, section):
+async def join(ctx, class_code = None, section = None):
+    if not section:
+        await ctx.channel.send('You either did not enter the class code or the section.\nPlease try again.')
+        return
     await ctx.channel.send(f'The class code you entered is: {class_code}')
     await ctx.channel.send(f'The section you entered is: {section}')
-    add_to_role(ctx.message.author.id, class_code, section)
+
+    if class_code not in db['roles']:
+        add_subj_to_db(class_code, section)
+        role = await ctx.guild.create_role(name=f'{class_code} {section}', mentionable=True)
+    
+    print(db.keys()) # for debugging
+
+    await ctx.author.add_roles(role)
+    await ctx.send(f"Successfully created and assigned {role.mention}!")
+
 
 # @bot.command()
 # async def test(ctx,):
