@@ -1,5 +1,6 @@
 from discord.ext import commands
 import discord
+from discord.utils import get
 import os
 from scraper import update_database
 from bisect_seek import find_subject
@@ -43,15 +44,44 @@ async def join(ctx, class_code = None, section = None):
     await ctx.channel.send(f'The class code you entered is: {class_code}')
     await ctx.channel.send(f'The section you entered is: {section}')
 
-    if class_code not in db['roles']:
+    # checks if class role exists
+    if f'{class_code} {section}' not in db.keys():
         add_subj_to_db(class_code, section)
         role = await ctx.guild.create_role(name=f'{class_code} {section}', mentionable=True)
     
-    print(db.keys()) # for debugging
+    role = discord.utils.get(ctx.guild.roles, name = f'{class_code} {section}')
 
-    await ctx.author.add_roles(role)
-    await ctx.send(f"Successfully created and assigned {role.mention}!")
+    # checks if user is already in the class
+    if role in ctx.author.roles:
+        await ctx.send(':red_circle: You\'re already in that class.')
+    else:
+        await ctx.author.add_roles(role)
+        await ctx.send(f":white_check_mark: Added you to the class: {role.mention}!")        
 
+@bot.command()
+async def leave(ctx, class_code = None, section = None):
+    await ctx.send(f'Removing you from {class_code} {section}')
+    
+    # next line is temporary
+    del db['{class_code} {section}']
+
+# for debugging ------
+@bot.command()
+async def delete(ctx, class_code = None, section = None):
+    if f'{class_code} {section}' in db.keys():
+        await ctx.send(f'Deleting {class_code} {section}...')
+        del db[f'{class_code} {section}']
+    else:
+        ctx.send('Class not found. Nothing is deleted.')
+
+@bot.command()
+async def listkeys(ctx):
+    await ctx.send(db.keys())
+
+@bot.command()
+async def keyinfo(ctx, key):
+    await ctx.send(db[key])
+# --------------------
 
 # @bot.command()
 # async def test(ctx,):
