@@ -3,6 +3,9 @@ from webbot import Browser
 import os
 import pandas as pd
 
+def remove_space(str):
+    return str.replace(' ', '')
+
 async def update_database():
     my_file = 'subjects.csv'
 
@@ -77,5 +80,8 @@ async def update_database():
 
     # rearranges the csv file for more optimal searching
     db = pd.read_csv(databasefile, skip_blank_lines=True, names=['subject_code', 'section', 'course_title', 'units', 'time', 'room', 'instructor', 'max_no', 'lang', 'level', 'free_slots', 'remarks', 's', 'p'])
+
+    # removes space in subject code
+    db['subject_code'] = db['subject_code'].apply(remove_space)
 
     db.sort_values(by=['subject_code'], ascending=True).to_csv(databasefile, index=False)
