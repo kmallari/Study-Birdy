@@ -68,6 +68,14 @@ async def leave(ctx, class_code = None, section = None):
         await ctx.send(f'Removing you from __{class_code} {section}__')
         await ctx.author.remove_roles(role)
     
+@bot.command()
+async def clear(ctx):
+    for r in ctx.author.roles:
+        if r.name in db.keys():
+            role = discord.utils.get(ctx.guild.roles, name = r.name)
+            await ctx.send(f'Removing you from: __{r.name}__')
+            await ctx.author.remove_roles(role)
+    pass
 
 # for debugging ------
 @bot.command()
@@ -85,6 +93,13 @@ async def listkeys(ctx):
 @bot.command()
 async def keyinfo(ctx, key):
     await ctx.send(db[key])
+
+@bot.command()
+async def roles(ctx):
+    await ctx.send(ctx.author.roles)
+    await ctx.send('----')
+    for role in ctx.author.roles:
+        await ctx.send(role.name)
 # --------------------
 
 # @bot.command()
