@@ -56,14 +56,18 @@ async def join(ctx, class_code = None, section = None):
         await ctx.send(':red_circle: You\'re already in that class.')
     else:
         await ctx.author.add_roles(role)
-        await ctx.send(f":white_check_mark: Added you to the class: {role.mention}!")        
+        await ctx.send(f":white_check_mark: Added you to the class: __{class_code} {section}!__")        
 
 @bot.command()
 async def leave(ctx, class_code = None, section = None):
-    await ctx.send(f'Removing you from {class_code} {section}')
+    role = discord.utils.get(ctx.guild.roles, name = f'{class_code} {section}')
+
+    if role not in ctx.author.roles:
+        await ctx.send(f':red_circle: You\'re not in the class: {class_code} {section}')
+    else:
+        await ctx.send(f'Removing you from __{class_code} {section}__')
+        await ctx.author.remove_roles(role)
     
-    # next line is temporary
-    del db['{class_code} {section}']
 
 # for debugging ------
 @bot.command()
