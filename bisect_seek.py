@@ -54,8 +54,6 @@ def find_subject(filename, class_code, section):
         except Exception as e:
             print(e)
     if found:
-        print("good row", row)
-        return {'result': True, 'message': f'Class found'}
+        return row
     else:
-        print("bad row", row)
-        return {'result': False, 'message': f'Class not found in Database'}
+        return False

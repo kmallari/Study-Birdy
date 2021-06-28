@@ -1,6 +1,6 @@
 from discord.ext import commands
 import discord
-from discord.utils import get
+# from discord.utils import get
 import os
 from scraper import update_database
 from bisect_seek import find_subject
@@ -17,8 +17,10 @@ def add_subj_to_db(class_code, section):
     if code_sec_str in db.keys():
         return
     subj_info = find_subject('subjects.csv', class_code, section)
+    if subj_info == False:
+        return subj_info
     db[code_sec_str] = subj_info
-    print(db[code_sec_str])
+    return True
 
 @bot.event
 async def on_ready():
@@ -37,7 +39,11 @@ async def update(ctx):
     await ctx.channel.send(f'Database is updated. <@{ctx.author.id}>')
 
 @bot.command()
-async def join(ctx, class_code = None, section = None):
+async def join(ctx, class_code = None, section = None, excess_arg = None):
+    if excess_arg:
+        await ctx.send('You entered too many arguments. Make sure to format your message correctly.')
+        return
+
     if not section:
         await ctx.channel.send('You either did not enter the class code or the section.\nPlease try again.')
         return
@@ -46,8 +52,11 @@ async def join(ctx, class_code = None, section = None):
 
     # checks if class role exists
     if f'{class_code} {section}' not in db.keys():
-        add_subj_to_db(class_code, section)
-        role = await ctx.guild.create_role(name=f'{class_code} {section}', mentionable=True)
+        if add_subj_to_db(class_code, section):
+            role = await ctx.guild.create_role(name=f'{class_code} {section}', mentionable=True)
+        else:
+            await ctx.send(f'Class __{class_code} {section}__ was not found in our database.')
+            return
     
     role = discord.utils.get(ctx.guild.roles, name = f'{class_code} {section}')
 
@@ -59,7 +68,11 @@ async def join(ctx, class_code = None, section = None):
         await ctx.send(f":white_check_mark: Added you to the class: __{class_code} {section}!__")        
 
 @bot.command()
-async def leave(ctx, class_code = None, section = None):
+async def leave(ctx, class_code = None, section = None, excess_arg = None):
+    if excess_arg:
+        await ctx.send('You entered too many arguments. Make sure to format your message correctly.')
+        return
+
     role = discord.utils.get(ctx.guild.roles, name = f'{class_code} {section}')
 
     if role not in ctx.author.roles:
@@ -91,8 +104,8 @@ async def listkeys(ctx):
     await ctx.send(db.keys())
 
 @bot.command()
-async def keyinfo(ctx, key):
-    await ctx.send(db[key])
+async def keyinfo(ctx, class_code = None, section = None):
+    await ctx.send(db[f'{class_code} {section}'])
 
 @bot.command()
 async def roles(ctx):
