@@ -111,7 +111,7 @@ async def classes(ctx):
 **Units**: {db[role.name][3]}
 **Schedule**: {db[role.name][4]}
 **Professor**: {db[role.name][6]}
-**Zoom link**: {db[role.name][14]}\n-----
+**Zoom link**: {db[role.name][14]} (added by <@{db[role.name][15]}>)\n-----
 '''.replace('|', ','))
             except:
                 await ctx.send(f'''**Subject code**: {db[role.name][0]}, **Section**: {db[role.name][1]}
@@ -125,8 +125,24 @@ No zoom link in our database.\n-----
     if not has_class:
         ctx.send('You have not joined any classes.')
 
+@bot.command()
+async def zoom(ctx, class_code = None, section = None, link = None, excess_arg = None):
+    if not class_code or not section or not link or excess_arg:
+        await ctx.send('Invalid input. Please try again.')
+        return
 
-
+    if f'{class_code} {section}' in db.keys():
+        if 'zoom.us' not in link:
+            await ctx.send('Invalid link! Please try again.')
+        else:
+            try:
+                db[f'{class_code} {section}'][14] = link
+                db[f'{class_code} {section}'][15] = ctx.author.id
+                await ctx.send(f'Updated the zoom link of __{class_code} {section}__ to ``{link}``')
+            except:
+                db[f'{class_code} {section}'].append(link)
+                db[f'{class_code} {section}'].append(ctx.author.id)
+                await ctx.send(f'Succesfully added ``{link}`` as the zoom link for __{class_code} {section}__')
 
 # for debugging ------
 @bot.command()
