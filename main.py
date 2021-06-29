@@ -86,15 +86,8 @@ async def leave(ctx, class_code = None, section = None, excess_arg = None):
         await ctx.send(f'Removing you from __{class_code} {section}__')
         await ctx.author.remove_roles(role)
 
-        # next line is for debugging
-        # await ctx.send(f'Length: {len(role.members)}')
-
-        time.sleep(0.1) # needed to make sure the bot reads the role update
-        # still broken
-        if len(role.members) == 0:
-            await role.delete()
+    await cleardb(ctx)
              
-
 @bot.command()
 async def clear(ctx):
     for role in ctx.author.roles:
@@ -103,15 +96,16 @@ async def clear(ctx):
             await ctx.send(f'Removing you from: __{role.name}__')
             await ctx.author.remove_roles(role)
 
-            # next line is for debugging
-            # await ctx.send(f'Members: {role.members}')
-            
-            time.sleep(0.1) # needed to make sure the bot reads the role update
-            # still broken
-            if len(role.members) == 0:
-                await role.delete()
-                del db[role.name]
-    pass
+    await cleardb(ctx)
+
+@bot.command()
+async def cleardb(ctx):
+    for key in db.keys():
+        role = discord.utils.get(ctx.guild.roles, name = key)
+        if key != 'roles' and len(role.members) == 0:
+            del db[key]
+            await role.delete()
+    await ctx.send('done clearing db')
 
 # for debugging ------
 @bot.command()
@@ -129,8 +123,8 @@ async def listkeys(ctx):
     await ctx.send(db.keys())
 
 @bot.command()
-async def keyinfo(ctx, class_code = None, section = None):
-    await ctx.send(db[f'{class_code} {section}'])
+async def keyinfo(ctx, key):
+    await ctx.send(db[key])
 
 @bot.command()
 async def roles(ctx):
@@ -142,6 +136,14 @@ async def roleinfo(ctx, role_name):
     await ctx.send(f'Role: {role.name}')
     await ctx.send(f'Num of users: {len(role.members)}')
     await ctx.send(f'Members: {role.members}')
+
+@bot.command()
+async def default(ctx):
+    await join(ctx, 'BIO399.12', 'A')
+    await join(ctx, 'ATMOS299.1', 'A')
+    await join(ctx, 'ENE13.05i', 'A')
+    await join(ctx, 'ArtAp10', 'A')
+
 # --------------------
 
 # @bot.command()
