@@ -5,11 +5,8 @@ import os
 from scraper import update_database
 from bisect_seek import find_subject
 from replit import db # allows access to replit database
-import time
 
 # client = discord.Client()
-
-db['roles'] = []
 
 intents = discord.Intents.all()
 intents.members = True
@@ -25,9 +22,6 @@ def add_class_to_db(class_code, section):
         return subj_info
     db[code_sec_str] = subj_info
     return True
-
-def del_class_as_role(role: discord.Role = None):
-    pass
 
 @bot.event
 async def on_ready():
@@ -102,10 +96,37 @@ async def clear(ctx):
 async def cleardb(ctx):
     for key in db.keys():
         role = discord.utils.get(ctx.guild.roles, name = key)
-        if key != 'roles' and len(role.members) == 0:
+        if len(role.members) == 0:
             del db[key]
             await role.delete()
-    await ctx.send('done clearing db')
+
+@bot.command()
+async def classes(ctx):
+    has_class = False
+    for role in ctx.author.roles:
+        if role.name in db.keys():
+            try:
+                await ctx.send(f'''**Subject code**: {db[role.name][0]}, **Section**: {db[role.name][1]}
+**Course Title**: {db[role.name][2]}
+**Units**: {db[role.name][3]}
+**Schedule**: {db[role.name][4]}
+**Professor**: {db[role.name][6]}
+**Zoom link**: {db[role.name][14]}\n-----
+'''.replace('|', ','))
+            except:
+                await ctx.send(f'''**Subject code**: {db[role.name][0]}, **Section**: {db[role.name][1]}
+**Course Title**: {db[role.name][2]}
+**Units**: {db[role.name][3]}
+**Schedule**: {db[role.name][4]}
+**Professor**: {db[role.name][6]}
+No zoom link in our database.\n-----
+'''.replace('|', ','))
+            has_class = True
+    if not has_class:
+        ctx.send('You have not joined any classes.')
+
+
+
 
 # for debugging ------
 @bot.command()
@@ -145,9 +166,5 @@ async def default(ctx):
     await join(ctx, 'ArtAp10', 'A')
 
 # --------------------
-
-# @bot.command()
-# async def test(ctx,):
-#     add_to_role(ctx.message.author.id, 'PHILO132.2i', 'A')
             
 bot.run(os.getenv('TOKEN'))
