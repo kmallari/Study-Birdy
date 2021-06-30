@@ -1,17 +1,60 @@
+# INVITE LINK https://discord.com/oauth2/authorize?client_id=857219790220689468&permissions=268953712&scope=bot
+
+"""
+To Do:
+    - Additional error checking for commands
+    - ~help command to display commands and samples
+    - Mention @subject+section 10 minutes before sync meeting
+    - Ability to change the time for sync meeting
+    - Make text sent by bot prettier
+"""
+
 from discord.ext import commands
 import discord
-from discord.utils import get
+from discord import Embed
+from json import loads
+# from discord.utils import get
 import os
 from scraper import update_database
 from bisect_seek import find_subject
 from replit import db # allows access to replit database
 
-# client = discord.Client()
+client = discord.Client()
 
 intents = discord.Intents.all()
 intents.members = True
 
 bot = commands.Bot(command_prefix="~", intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f"Bot is ready")
+    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Your friendly study buddy."))
+
+# does not work
+@client.event
+async def on_guild_join(guild):
+    for channel in guild.text_channels:
+        if channel.permissions_for(guild.me).send_messages:
+            temp_ban_embeds = aboutme_msg()
+            await channel.send('test1')
+            for embed in temp_ban_embeds:
+                await channel.send(embed=embed)
+                await channel.send('test2')
+            await channel.send('test3')
+        break
+
+def aboutme_msg():
+    with open("jsons/aboutme.json", "r") as file:
+        temp_ban_embeds = parse_embed_json(file.read())
+    return temp_ban_embeds
+
+def parse_embed_json(json_file):
+    embeds_json = loads(json_file)['embeds']
+    
+    for embed_json in embeds_json:
+        embed = Embed().from_dict(embed_json)
+        yield embed
 
 def add_class_to_db(class_code, section):
     code_sec_str = f'{class_code} {section}'
@@ -22,11 +65,6 @@ def add_class_to_db(class_code, section):
         return subj_info
     db[code_sec_str] = subj_info
     return True
-
-@bot.event
-async def on_ready():
-    print(f"Bot is ready")
-    await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="Your friendly study buddy."))
 
 # ---------- TEMPLATE FOR COMMANDS ---------- #
 # @bot.command()
@@ -144,6 +182,22 @@ async def zoom(ctx, class_code = None, section = None, link = None, excess_arg =
                 db[f'{class_code} {section}'].append(ctx.author.id)
                 await ctx.send(f'Succesfully added ``{link}`` as the zoom link for __{class_code} {section}__')
 
+@bot.command()
+async def aboutme(ctx):
+    temp_ban_embeds = aboutme_msg()
+    
+    for embed in temp_ban_embeds:
+        await ctx.send(embed=embed)
+
+# @bot.command()
+# async def help(ctx):
+#     pass
+
+
+
+
+
+
 # for debugging ------
 @bot.command()
 async def delete(ctx, class_code = None, section = None):
@@ -180,6 +234,10 @@ async def default(ctx):
     await join(ctx, 'ATMOS299.1', 'A')
     await join(ctx, 'ENE13.05i', 'A')
     await join(ctx, 'ArtAp10', 'A')
+
+@bot.command()
+async def botsay(ctx):
+    bot.say("something")
 
 # --------------------
             
