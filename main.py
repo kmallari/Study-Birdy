@@ -79,12 +79,10 @@ async def update(ctx):
 
 @bot.command()
 async def join(ctx, class_code = None, section = None, excess_arg = None):
-    if excess_arg:
-        await ctx.send('You entered too many arguments. Make sure to format your message correctly.')
-        return
-
-    if not section:
-        await ctx.channel.send('You either did not enter the class code or the section.\nPlease try again.')
+    if excess_arg or not section:
+        embed=discord.Embed(title="<a:x_:859805339511685121> An error has occured.", description="Make sure you you use the command in this format:\n`~join <class_code> <section>`.\nNote that there should be no space in the class code.", color=0x57afdb)
+        embed.add_field(name="Example", value="`~join ArtAp10 A`", inline=False)
+        await ctx.send(embed=embed)
         return
 
     # checks if class role exists
@@ -92,41 +90,68 @@ async def join(ctx, class_code = None, section = None, excess_arg = None):
         if add_class_to_db(class_code, section):
             role = await ctx.guild.create_role(name=f'{class_code} {section}', mentionable=True)
         else:
-            await ctx.send(f'Class __{class_code} {section}__ was not found in our database.')
+            embed=discord.Embed(title=f"<a:x_:859805339511685121> {class_code} {section} was not found in our database.", description="Make sure you you use the command in this format: `~join <class_code> <section>`. Note that there should be no space in the class code.", color=0x57afdb)
+            embed.add_field(name="Example", value="`~join ArtAp10 A`", inline=False)
+            await ctx.send(embed=embed)
+
+            # await ctx.send(f'Class __{class_code} {section}__ was not found in our database.')
             return
     
     role = discord.utils.get(ctx.guild.roles, name = f'{class_code} {section}')
 
     # checks if user is already in the class
     if role in ctx.author.roles:
-        await ctx.send(':red_circle: You\'re already in that class.')
+        embed=discord.Embed(title=f"<a:x_:859805339511685121> You're already in the class: {class_code} {section}.", color=0x57afdb)
+        await ctx.send(embed=embed)
+
+        # await ctx.send(':red_circle: You\'re already in that class.')
     else:
         await ctx.author.add_roles(role)
-        await ctx.send(f":white_check_mark: Added you to the class: __{class_code} {section}__")
+        embed=discord.Embed(title="<a:check:859805173051293696> Successfully added you to the class!", description=f"You are now in the class: {class_code} {section}",color=0x57afdb)
+        await ctx.send(embed=embed)
+
+        # await ctx.send(f":white_check_mark: Added you to the class: __{class_code} {section}__")
 
 @bot.command()
 async def leave(ctx, class_code = None, section = None, excess_arg = None):
-    if excess_arg:
-        await ctx.send('You entered too many arguments. Make sure to format your message correctly.')
+    if excess_arg or not section:
+        embed=discord.Embed(title="<a:x_:859805339511685121> An error has occured.", description="Make sure you you use the command in this format:\n`~leave <class_code> <section>`.\nNote that there should be no space in the class code.", color=0x57afdb)
+        embed.add_field(name="Example", value="`~leave ArtAp10 A`", inline=False)
+        await ctx.send(embed=embed)
+        # await ctx.send('You entered too many arguments. Make sure to format your message correctly.')
         return
 
     role = discord.utils.get(ctx.guild.roles, name = f'{class_code} {section}')
 
     if role not in ctx.author.roles:
-        await ctx.send(f':red_circle: You\'re not in the class: {class_code} {section}')
+        embed=discord.Embed(title=f"<a:x_:859805339511685121> You're currently not in the class: {class_code} {section}.", description="Or the class is currently not in our database", color=0x57afdb)
+        await ctx.send(embed=embed)
+        # await ctx.send(f':red_circle: You\'re not in the class: {class_code} {section}')
     else:
-        await ctx.send(f'Removing you from __{class_code} {section}__')
         await ctx.author.remove_roles(role)
 
+        embed=discord.Embed(title="<a:check:859805173051293696> Successfully removed you from the class!", description=f"You are no longer in the class: {class_code} {section}",color=0x57afdb)
+        await ctx.send(embed=embed)
+
+        # await ctx.send(f'Removing you from __{class_code} {section}__')
     await cleardb(ctx)
              
 @bot.command()
 async def clear(ctx):
+    i = 0
     for role in ctx.author.roles:
         if role.name in db.keys():
             # role = discord.utils.get(ctx.guild.roles, name = r.name)
-            await ctx.send(f'Removing you from: __{role.name}__')
             await ctx.author.remove_roles(role)
+            if i == 0:
+                classes_removed = role.name
+                i += 1
+                continue
+            classes_removed += ', ' + role.name
+    # await ctx.send(f'Removing you from: __{role.name}__')
+    
+    embed=discord.Embed(title="<a:check:859805173051293696> Successfully cleared your classes!", description=f"You were removed from these classes: {classes_removed}",color=0x57afdb)
+    await ctx.send(embed=embed)
 
     await cleardb(ctx)
 
@@ -144,21 +169,38 @@ async def classes(ctx):
     for role in ctx.author.roles:
         if role.name in db.keys():
             try:
-                await ctx.send(f'''**Subject code**: {db[role.name][0]}, **Section**: {db[role.name][1]}
-**Course Title**: {db[role.name][2]}
-**Units**: {db[role.name][3]}
-**Schedule**: {db[role.name][4]}
-**Professor**: {db[role.name][6]}
-**Zoom link**: {db[role.name][14]} (added by <@{db[role.name][15]}>)\n-----
-'''.replace('|', ','))
+                embed=discord.Embed(title = f'{db[role.name][0]} {db[role.name][1]}', description = db[role.name][2].replace('|', ','), color=0x57afdb)
+                embed.add_field(name = 'Units', value = db[role.name][3], inline=True)
+                embed.add_field(name = 'Schedule', value = db[role.name][4], inline=True)
+                embed.add_field(name = 'Professor', value = db[role.name][6].replace('|', ','), inline=True)
+                embed.add_field(name = 'Zoom Link', value = db[role.name][14], inline=True)
+                await ctx.send(embed=embed)
+                await ctx.send(f'Zoom link for the class {role.name} added by: <@{db[role.name][15]}>')
+
+#                 await ctx.send(f'''**Subject code**: {db[role.name][0]}, **Section**: {db[role.name][1]}
+# **Course Title**: {db[role.name][2]}
+# **Units**: {db[role.name][3]}
+# **Schedule**: {db[role.name][4]}
+# **Professor**: {db[role.name][6]}
+# **Zoom link**: {db[role.name][14]} (added by <@{db[role.name][15]}>)\n-----
+# '''.replace('|', ','))
+
             except:
-                await ctx.send(f'''**Subject code**: {db[role.name][0]}, **Section**: {db[role.name][1]}
-**Course Title**: {db[role.name][2]}
-**Units**: {db[role.name][3]}
-**Schedule**: {db[role.name][4]}
-**Professor**: {db[role.name][6]}
-No zoom link in our database.\n-----
-'''.replace('|', ','))
+                embed=discord.Embed(title = f'{db[role.name][0]} {db[role.name][1]}', description = db[role.name][2].replace('|', ','), color=0x57afdb)
+                embed.add_field(name = 'Units', value = db[role.name][3], inline=True)
+                embed.add_field(name = 'Schedule', value = db[role.name][4], inline=True)
+                embed.add_field(name = 'Professor', value = db[role.name][6].replace('|', ','), inline=True)
+                embed.add_field(name = 'Zoom Link', value = 'The zoom link is not found in our database.', inline = True)
+                await ctx.send(embed=embed)
+
+#                 await ctx.send(f'''**Subject code**: {db[role.name][0]}, **Section**: {db[role.name][1]}
+# **Course Title**: {db[role.name][2]}
+# **Units**: {db[role.name][3]}
+# **Schedule**: {db[role.name][4]}
+# **Professor**: {db[role.name][6]}
+# No zoom link in our database.\n-----
+# '''.replace('|', ','))
+
             has_class = True
     if not has_class:
         ctx.send('You have not joined any classes.')
