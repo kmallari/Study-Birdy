@@ -1,0 +1,16 @@
+{
+  "content": null,
+  "embeds": [
+    {
+      "title": "About me",
+      "description": "Study Birdy is a Discord bot made to assist Ateneans managing their classes. The bot has multiple functions, from reminding synchronous classes to looking up the available slots on AISIS during enlistment.\n\nTo get started, type ``~help`` on any channel to view the list of commands available.",
+      "color": 10802926,
+      "author": {
+        "name": "Study Birdy",
+        "icon_url": "https://i.imgur.com/aCF2Kv3.png"
+      }
+    }
+  ],
+  "username": "Study Birdy",
+  "avatar_url": "https://cdn.dribbble.com/users/1162077/screenshots/7542499/media/d6f3265e5017257e5900b762754f2655.png"
+}
