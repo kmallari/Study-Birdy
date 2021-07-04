@@ -6,7 +6,7 @@ import pandas as pd
 def remove_space(str):
     return str.replace(' ', '')
 
-def update_database():
+async def update_database():
     my_file = 'classes.csv'
 
     # check if file exists 
@@ -33,7 +33,7 @@ def update_database():
 
     web.click('Sign in') # successfully signs into AISIS
     # web.click('CLASS SCHEDULE')
-    web.go_to(f'{mirror}j_aisis/J_VCSC.do')
+    web.go_to(f'{mirror[0]}j_aisis/J_VCSC.do')
 
     # html parsing
     page_soup = soup(web.get_page_source(), "html.parser")

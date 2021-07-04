@@ -10,6 +10,16 @@ Done
     - Make text sent by bot prettier
 """
 
+'''
+list of commands so far:
+    ~help
+    ~join
+    ~leave
+    ~clear
+    ~classes
+    ~zoom
+'''
+
 from discord.ext import commands
 import discord
 from discord import Embed
@@ -77,6 +87,7 @@ def add_class_to_db(class_code, section):
 #     await ctx.send(arg)
 
 # update the database
+# to do: update such that only an admin can use this command
 @bot.command()
 async def update(ctx):
     await ctx.channel.send('Updating the database. This will take around three (3) minutes to finish. You will be pinged after the database is updated. In the meantime, the bot will be unusable.')
@@ -209,6 +220,11 @@ async def zoom(ctx, class_code = None, section = None, link = None, excess_arg =
                 db[f'{class_code} {section}'].append(ctx.author.id)
                 await ctx.send(f'Succesfully added ``{link}`` as the zoom link for __{class_code} {section}__')
 
+# mentions the role 10 minutes before synchrnous class + zoom
+# @bot.command()
+# async def mention(ctx, role: bot.Role):
+#     pass
+    
 # the bot should do this upon entering a server (WIP)
 @bot.command()
 async def aboutme(ctx):
@@ -218,9 +234,9 @@ async def aboutme(ctx):
         await ctx.send(embed=embed)
 
 # lists all the commands available
-@bot.command()
-async def help(ctx):
-    pass
+# @bot.command()
+# async def help(ctx):
+#     pass
 
 
 
@@ -264,7 +280,7 @@ async def default(ctx):
 
 @bot.command()
 async def botsay(ctx):
-    bot.say("something")
+    await ctx.send("something")
 
 # --------------------
             
