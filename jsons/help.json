@@ -1,0 +1,45 @@
+{
+  "content": null,
+  "embeds": [
+    {
+      "description": "The available commands, their usage, and examples are seen below. Make sure to use the prefix `~` in using the commands.",
+      "color": 5814783,
+      "fields": [
+        {
+          "name": "`~help`",
+          "value": "Dispalys a list of usable commands.",
+          "inline": true
+        },
+        {
+          "name": "`~join <class_code> <section>`",
+          "value": "Lets you join a class and adds you to the role of the class. Note that there should be no space in the class code.\nExample: `~join ENGG101.01 A`",
+          "inline": true
+        },
+        {
+          "name": "`~leave <class_code> <section>`",
+          "value": "Lets you leave the class and the role associated with it. Note that there should be no space in the class code.\nExample: `~leave ENGG101.01 A`",
+          "inline": true
+        },
+        {
+          "name": "`~clear`",
+          "value": "Clears your from all your classes and roles. You automatically leave all of your classes. This command is ideally used after a semester.",
+          "inline": true
+        },
+        {
+          "name": "`~classes~`",
+          "value": "This displays all your classes and the information associated with them.",
+          "inline": true
+        },
+        {
+          "name": "`~zoom <class_code> <section> <zoom_link>`",
+          "value": "Adds the zoom link to the class for easier access.\nExample: `~zoom ENGG101.01 A https://ateneo-edu.zoom.us/j/1234?pwd=5678"`,
+          "inline": true
+        }
+      ],
+      "author": {
+        "name": "Study Birdy",
+        "icon_url": "https://i.imgur.com/aCF2Kv3.png"
+      }
+    }
+  ]
+}

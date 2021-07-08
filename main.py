@@ -13,7 +13,7 @@ Done
 '''
 list of commands so far:
     ~help
-    ~join
+    ~join <class_code> <section>
     ~leave
     ~clear
     ~classes
@@ -34,7 +34,7 @@ from replit import db # allows access to replit database
 client = discord.Client()
 intents = discord.Intents.all()
 intents.members = True
-bot = commands.Bot(command_prefix="~", intents=intents)
+bot = commands.Bot(command_prefix="~", intents=intents, help_command=None)
 
 @bot.event
 async def on_ready():
@@ -59,6 +59,11 @@ async def on_ready():
 # returns about me embedded message from json file
 def aboutme_msg():
     with open("jsons/aboutme.json", "r") as file:
+        temp_ban_embeds = parse_embed_json(file.read())
+    return temp_ban_embeds
+
+def help_msg():
+    with open("jsons/help.json", "r") as file:
         temp_ban_embeds = parse_embed_json(file.read())
     return temp_ban_embeds
 
@@ -234,9 +239,12 @@ async def aboutme(ctx):
         await ctx.send(embed=embed)
 
 # lists all the commands available
-# @bot.command()
-# async def help(ctx):
-#     pass
+@bot.command()
+async def help(ctx):
+    temp_ban_embeds = help_msg()
+
+    for embed in temp_ban_embeds:
+        await ctx.send(embed=embed)
 
 
 
